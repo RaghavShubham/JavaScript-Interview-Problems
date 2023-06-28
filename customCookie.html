@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Cookie</title>
+    <script>
+      //   Normal Cookie provided by the browser
+      document.cookie = "name=Raghav";
+
+      //   Cookie with an expiration time (in seconds))
+      document.cookie = "blog=TechCompositions;max-age=1";
+
+      console.log("Document Cookie", document.cookie);
+      setTimeout(() => {
+        console.log("Document Cookie", document.cookie);
+      }, 1500);
+
+      // Function to create the custom Cookie
+      const useCustomCookie = () => {
+        const store = new Map();
+
+        Object.defineProperty(document, "myCookie", {
+          configurable: true,
+          set: (val) => {
+            const { key, value, options } = parseCookieString(val);
+
+            let expiry = Infinity;
+            if (options["max-age"]) {
+              expiry = Date.now() + Number(options["max-age"]) * 1000;
+            }
+
+            store.set(key, { value, expiry });
+          },
+          get: () => {
+            const time = Date.now();
+            const cookies = [];
+            for (const [key, { value, expiry }] of store) {
+              if (expiry <= time) {
+                store.delete(key);
+              } else cookies.push(`${key}=${value}`);
+            }
+            return cookies.join("; ");
+          },
+        });
+
+        const parseCookieString = (str) => {
+          const [nameValue, ...rest] = str.split(";");
+          const [key, value] = separateKeyVal(nameValue);
+          const options = {};
+          for (let option of rest) {
+            const [key, value] = separateKeyVal(option);
+            options[key] = value;
+          }
+
+          return { key, value, options };
+        };
+
+        const separateKeyVal = (pair) => {
+          return pair.split("=").map((s) => s.trim());
+        };
+      };
+
+      useCustomCookie();
+
+      //   Custom Cookie we created
+      document.myCookie = "name=Shubham";
+
+      //   Custom Cookie with an expiration time (in seconds))
+      document.myCookie = "youtube=GreyLED;max-age=1";
+
+      console.log("Custom Cookie", document.myCookie);
+
+      setTimeout(() => {
+        console.log("Custom Cookie", document.myCookie);
+      }, 1500);
+    </script>
+  </head>
+  <body>
+    <h1>Custom Cookie</h1>
+  </body>
+</html>
