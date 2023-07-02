@@ -1,0 +1,8 @@
+div[id="root"]
+  > section:nth-child(2)
+  > p:nth-child(1)
+  > span:nth-child(1)
+  > button:nth-child(2) {
+  background-color: rgb(255, 164, 164);
+  color: darkblue;
+}
